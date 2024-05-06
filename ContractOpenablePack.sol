@@ -318,6 +318,13 @@ contract ContractOpenablePack is
         }
     }
 
+    function resetPack(uint256 _packId) external onlyRole(releaseRole) {
+        delete packInfo[_packId];
+        // burn msg sender's balance
+        uint256 b = balanceOf(_msgSender(), _packId);
+        _burn(_msgSender(), _packId, b);
+    }
+
     function burnPack(uint256 _packId) external onlyRole(releaseRole) {
         delete packInfo[_packId];
         canUpdatePack[_packId] = false;

@@ -48,14 +48,14 @@ contract DynamicSupplyLimitERC1155 is SignatureMintWithParamsERC1155, UUPSUpgrad
         require(totalPrice >= platformFees, "!cp1");
 
         if (_req.currency == CurrencyTransferLib.NATIVE_TOKEN) {
-            require(msg.value == totalPrice, "!cp2");
+            require(msg.value >= totalPrice, "!cp2");
         } else {
             require(msg.value == 0, "!cp3");
         }
 
         CurrencyTransferLib.transferCurrency(_req.currency, _msgSender(), platformFeeRecipient, platformFees);
         CurrencyTransferLib.transferCurrency(_req.currency, _msgSender(), primarySaleRecipient, totalPrice - platformFees);
-        CurrencyTransferLib.transferCurrency(_req.currency, _msgSender(), _msgSender(), refund);
+        CurrencyTransferLib.transferCurrency(_req.currency, address(this), _msgSender(), refund);
     }
 
 

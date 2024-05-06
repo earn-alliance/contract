@@ -103,6 +103,12 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable, Timeb
         packContract.burnPack(_poolId);
     }
 
+    function resetPool(uint256 _poolId) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        // only support reset pool for 1155 pool for now
+        require(!is721[_poolId], "!p");
+        packContract.resetPack(_poolId);
+    }
+
     function supportsInterface(bytes4 interfaceId) public view override(AccessControlEnumerableUpgradeable, TimeboundEIP712Upgradeable, IERC165Upgradeable) returns(bool) {
         return AccessControlEnumerableUpgradeable.supportsInterface(interfaceId) || 
             TimeboundEIP712Upgradeable.supportsInterface(interfaceId) ||
@@ -172,6 +178,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable, Timeb
         require(_req.valuePayable == msg.value, "!value");
         address opener = _msgSender();
         require(opener == tx.origin, "!EOA");
+        require(_req.recipient == tx.origin, "!EOA");
         verifyRequest(_req, _sig);
         if (is721[_req.poolId]) {
             require(packContract721.balanceOf(address(this), _req.poolId) >= _req.amountToOpen, "!Bal");
