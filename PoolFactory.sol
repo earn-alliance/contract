@@ -178,7 +178,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable, Timeb
         require(_req.valuePayable == msg.value, "!value");
         address opener = _msgSender();
         require(opener == tx.origin, "!EOA");
-        require(_req.recipient == tx.origin, "!EOA");
+        require(!Address.isContract(_req.recipient), "!EOA");
         verifyRequest(_req, _sig);
         if (is721[_req.poolId]) {
             require(packContract721.balanceOf(address(this), _req.poolId) >= _req.amountToOpen, "!Bal");
