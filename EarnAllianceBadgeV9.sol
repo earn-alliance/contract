@@ -169,8 +169,8 @@ contract EarnAllianceBadgeV9 is
         address a = input.toAddress;
 
         require(verifyTimebound(input, r, s, v), "!sig");
-        require(totalSupply(t) < maxSupply[t], "!sup");
-        require(balanceOf(input.toAddress, t) < allowedBalancePerToken, "!rep");
+        require(totalSupply(t) + input.amount <= maxSupply[t], "!sup");
+        require(balanceOf(input.toAddress, t) + input.amount <= allowedBalancePerToken, "!rep");
         require(input.validUntil > block.timestamp, "!time");
 
         _mint(a, t, input.amount, bytes("0x"));
@@ -197,8 +197,8 @@ contract EarnAllianceBadgeV9 is
         require(verifyDynamicSupplyTimebound(input, r, s, v), "!sig");
         _setMaxSupply(t, input.supply);
         _setURI(input.url, t);
-        require(totalSupply(t) < maxSupply[t], "!sup");
-        require(balanceOf(input.to, t) < allowedBalancePerToken, "!rep");
+        require(totalSupply(t) + input.amt <= maxSupply[t], "!sup");
+        require(balanceOf(input.to, t) + input.amt <= allowedBalancePerToken, "!rep");
 
         _mint(a, t, input.amt, bytes("0x"));
         usedUID[input.uid] = true;
@@ -217,7 +217,7 @@ contract EarnAllianceBadgeV9 is
     ) external onlyOwner {
         // require whole batch to be mintable without hitting supply limit.
         require(
-            (totalSupply(tokenId) + lessThan100AirdropAddresses.length) <
+            (totalSupply(tokenId) + lessThan100AirdropAddresses.length) <=
                 maxSupply[tokenId],
             "!sup"
         );
